@@ -1,0 +1,65 @@
+/**
+ * Solarized Light theme for reveal.js.
+ * Author: Achim Staebler
+ */
+@import url('https://fonts.googleapis.com/css?family=Average+Sans');
+
+// Default mixins and settings -----------------
+@import "../template/mixins";
+@import "../template/settings";
+// ---------------------------------------------
+
+
+
+
+
+/**
+ * Solarized colors by Ethan Schoonover
+ */
+html * {
+  color-profile: sRGB;
+  rendering-intent: auto;
+}
+
+// #0f505d   #007980   #98c01f   #f9cc0f
+
+$headingFont: 'Average Sans', sans-serif;
+$mainFont: "Average Sans", serif;
+
+// Override theme settings (see ../template/settings.scss)
+$mainColor: #ededed;
+$mainFontSize: 30px;
+$headingColor: #ededed;
+$headingTextShadow: none;
+$backgroundColor: #0f505d;
+$linkColor: #007980;
+$linkColorHover: #98c01f;
+
+.reveal.reveal pre {
+  width: inherit;
+}
+
+
+.reveal .slides>section,
+.reveal .slides>section>section {
+  flex-direction: column;
+  align-items: center;
+
+  &.two-columns {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    & h2 {
+      flex-basis: 100%;
+    }
+  }
+
+  .align-left {
+    text-align: left;
+  }
+}
+
+// Theme template ------------------------------
+@import "../template/theme";
+// ---------------------------------------------

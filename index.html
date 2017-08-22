@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="author" content="Julien Tanguy"><meta name="copyright" content="CC BY 4.0"><title>Gérer ses dépendances avec Webpack</title><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" name="viewport"><link href="reveal.js/css/reveal.css" rel="stylesheet"><link rel="stylesheet" href="reveal.js/css/theme/valwin.css" id="theme"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+tex2jax: {
+  inlineMath: [["\\(", "\\)"]],
+  displayMath: [["\\[", "\\]"]],
+  ignoreClass: "nostem|nolatexmath"
+},
+asciimath2jax: {
+  delimiters: [["\\$", "\\$"]],
+  ignoreClass: "nostem|noasciimath"
+},
+TeX: { equationNumbers: { autoNumber: "none" } }
+});</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script><link href="reveal.js/lib/css/zenburn.css" rel="stylesheet"><script>document.write( '<link rel="stylesheet" href="reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );</script></head><body><div class="reveal"><div class="slides"><section class="title" data-state="title"><h1>Gérer ses dépendances avec Webpack</h1><p class="author"><small>Julien Tanguy</small></p></section><section id="__code_whoami_code" class="two-columns"><h2><code>whoami</code></h2><div class="imageblock" style=""><img src="images/jutanguy.jpg" alt="jutanguy"></div>
+<div class="openblock align-left"><div class="content"><div class="ulist"><ul><li><p>Développeur web</p></li><li><p>Amateur de fonctionnel</p></li></ul></div>
+<div class="ulist"><ul><li><p><a href="https://twitter.com/jutanguy" class="bare">https://twitter.com/jutanguy</a></p></li><li><p><a href="https://github.com/jtanguy" class="bare">https://github.com/jtanguy</a></p></li><li><p><a href="https://jtanguy.cleverapps.io" class="bare">https://jtanguy.cleverapps.io</a></p></li></ul></div></div></div></section>
+<section id="_frontend"><h2>Frontend</h2></section>
+<section id="_gestion_de_dpendances"><h2>Gestion de dépendances</h2></section>
+<section id="_browserify"><h2>Browserify</h2><div class="ulist"><ul><li><p><code>require()</code> dans le navigateur</p></li><li><p>Fonctionne avec les dépendances npm</p></li><li><p>Shim de modules node: stream, path, url, buffer, http, etc.</p></li></ul></div></section>
+<section id="_react_jsx"><h2>React + JSX</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="javascript language-javascript">&lt;div&gt;
+  &lt;h1&gt;Hello from Julien&lt;/h1&gt;
+  &lt;p&gt;Maybe you prefer a hello from Adele&lt;/p&gt;
+&lt;/div&gt;</code></pre></div></div></section>
+<section><section id="__span_class_image_img_src_images_webpack_png_alt_webpack_span"><h2><span class="image"><img src="images/webpack.png" alt="webpack"></span></h2></section><section id="__span_class_image_img_src_images_bundle_png_alt_bundle_span"><h2><span class="image"><img src="images/bundle.png" alt="bundle"></span></h2></section><section id="_gestion_de_l_arbre_de_dpendances_complet"><h2>Gestion de l&#8217;arbre de dépendances complet</h2><div class="ulist"><ul><li><p>javascript</p></li><li><p>css</p></li><li><p>assets: images, fonts, etc.</p></li></ul></div></section></section>
+<section id="_process"><h2>Process</h2><div class="paragraph"><p>Webpack sait parler javascript uniquement</p></div>
+<div class="olist arabic fragment"><ol class="arabic"><li><p>Transformer les fichiers en modules js (loaders)</p></li><li><p>Parcourir les dépendances en chargeant les fichiers (voir 1.)</p></li><li><p>Transformer l&#8217;arbre des dépendances en appelant les plugins</p></li><li><p>Done.</p></li></ol></div></section>
+<section id="_configuration_minimale"><h2>Configuration minimale</h2><div class="listingblock"><div class="title">webpack.config.js</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">const path = require('path');
+
+module.exports = {
+  entry: './app.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'), //**absolute path**
+    //publicPath: "https://d24fhjz7aycnpt.cloudfront.net/js/",
+    filename: 'bundle.js'
+  }
+};</code></pre></div></div></section>
+<section><section id="_loaders"><h2>Loaders</h2><div class="paragraph"><p>Transforme un fichier en quelque chose de compréhensible par webpack (js)</p></div><div class="ulist"><ul><li><p>Transforme en une chaine de caractères</p></li><li><p>Extrait les appels de dépendances</p></li></ul></div></section><section id="_exemple"><h2>Exemple</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="javascript language-javascript">import stylesheet from 'styles/my-styles.css';
+import logo from 'img/my-logo.svg';
+import someTemplate from 'html/some-template.html';
+console.log(stylesheet);
+//"body{font-size:12px}"
+console.log(logo);
+//"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5[...]"
+console.log(someTemplate);
+//"&lt;html&gt;&lt;body&gt;&lt;h1&gt;Hello&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;"</code></pre></div></div></section><section id="_loaders_utiles"><h2>Loaders utiles</h2><div class="ulist"><ul><li><p>babel-loader / ts-loader</p></li><li><p>file-loader / url-loader</p></li><li><p>sass-loader</p></li><li><p>css-loader</p></li><li><p>style-loader</p></li><li><p>html-loader</p></li></ul></div></section><section id="_configuration"><h2>Configuration</h2><div class="listingblock"><div class="title">webpack.config.js (extrait)</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">module: {
+  rules: [
+    { test: /\.(js|jsx)$/,
+        use: {
+            loader: 'babel-loader',
+            query: { presets: ['es2015', 'react'] }
+        },
+    },
+    { test: /\.css$/,
+      use: [ 'style-loader', 'css-loader' ],
+    },
+    { test: /\.(eot|ttf|woff|woff2|svg|png|jpg)/,
+      use: [
+        { loader: 'file-loader',
+          options: { name: '[name]-[hash:8].[ext]' }
+        }
+      ],
+    },
+  ]
+},</code></pre></div></div></section></section>
+<section><section id="_plugins"><h2>Plugins</h2><div class="paragraph"><p>Opère des transformations sur l&#8217;arbre de dépendances entier</p></div><div class="ulist"><ul><li><p>Optimisation des js</p></li><li><p>Injection de variables d&#8217;env</p></li><li><p>Extraction des styles</p></li><li><p>Génération de pages html</p></li></ul></div></section><section id="_plugins_utiles"><h2>Plugins utiles</h2><div class="ulist"><ul><li><p>CommonsChunkPlugin</p></li><li><p>DefinePlugin</p></li><li><p>ExtractTextWebpackPlugin</p></li><li><p>HtmlWebpackPlugin</p></li></ul></div></section><section id="_configuration_2"><h2>Configuration</h2><div class="listingblock"><div class="title">webpack.config.js (extrait)</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">plugins: [
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.CommonsChunkPlugin({
+        name: 'vendor',
+        minChunks: Infinity,
+    }),
+    new webpack.DefinePlugin({
+      IS_PROD: process.env.IS_PROD,
+    })
+],</code></pre></div></div></section></section>
+<section id="_conforts"><h2>Conforts</h2></section>
+<section id="_webpack_dev_server"><h2>webpack-dev-server</h2></section>
+<section><section id="_code_splitting"><h2>Code splitting</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="javascript language-javascript">function determineDate() {
+  require.ensure([], function(require) {
+    var moment = require('moment');
+    console.log(moment().format());
+  });
+}
+
+determineDate();</code></pre></div></div></section><section id="_nouvelle_syntaxe"><h2>Nouvelle syntaxe</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="javascript language-javascript">function determineDate() {
+  import('moment').then(function(moment) {
+    console.log(moment().format());
+  }).catch(function(err) {
+    console.log('Failed to load moment', err);
+  });
+}
+
+determineDate();</code></pre></div></div></section></section>
+<section id="_runtime"><h2>Runtime</h2><div class="paragraph"><p>Packagé par webpack dans le bundle.js</p></div></section>
+<section id="__em_bundle_vendors_em"><h2><em>Bundle vendors</em></h2><div class="listingblock"><div class="title">webpack.config.js</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">const path = require('path');
+
+module.exports = {
+    entry: {
+        main: "./src/app.js",
+        vendor: ['react', 'jquery', 'lodash'],
+    },
+    output: {
+        path: path.join(__dirname, "dist/"),
+        filename: "[name].js",
+    },
+    module: {
+        rules: [
+            {
+                test: /\.(js|jsx)$/,
+                use: {
+                    loader: 'babel-loader',
+                    query: { presets: ['es2015', 'react'] }
+                },
+            },
+        ]
+    },
+    plugins: [
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            minChunks: Infinity,
+        }),
+    ],
+};</code></pre></div></div></section>
+<section id="_analyse"><h2>Analyse</h2><div class="paragraph"><p><a href="https://webpack.github.io/analyse/" class="bare">https://webpack.github.io/analyse/</a></p></div></section>
+<section id="__a_href_https_webpack_js_org_class_bare_https_webpack_js_org_a"><h2><a href="https://webpack.js.org" class="bare">https://webpack.js.org</a></h2></section>
+<section id="_links"><h2>Links</h2><div class="ulist bibliography"><ul class="bibliography"><li><p><a id="webpack"></a>[webpack] Site Officiel. <a href="https://webpack.js.org/" class="bare">https://webpack.js.org/</a></p></li><li><p><a id="webpack2-getting-started"></a>[webpack2-getting-started] Getting started with webpack 2. <a href="https://blog.madewithenvy.com/getting-started-with-webpack-2-ed2b86c68783" class="bare">https://blog.madewithenvy.com/getting-started-with-webpack-2-ed2b86c68783</a></p></li><li><p><a id="webpack-your-bags"></a>[webpack-your-bags] Webpack your bags. <a href="https://blog.madewithlove.be/post/webpack-your-bags/" class="bare">https://blog.madewithlove.be/post/webpack-your-bags/</a></p></li></ul></div></section></div></div><script src="reveal.js/lib/js/head.min.js"></script><script src="reveal.js/js/reveal.js"></script><script>// See https://github.com/hakimel/reveal.js#configuration for a full list of configuration options
+Reveal.initialize({
+  // Change the display
+  display: 'flex',
+  // Display controls in the bottom right corner
+  controls: true,
+  // Display a presentation progress bar
+  progress: true,
+  // Display the page number of the current slide
+  slideNumber: false,
+  // Push each slide change to the browser history
+  history: false,
+  // Enable keyboard shortcuts for navigation
+  keyboard: true,
+  // Enable the slide overview mode
+  overview: true,
+  // Vertical centering of slides
+  center: true,
+  // Enables touch navigation on devices with touch input
+  touch: true,
+  // Loop the presentation
+  loop: false,
+  // Change the presentation direction to be RTL
+  rtl: false,
+  // Turns fragments on and off globally
+  fragments: true,
+  // Flags if the presentation is running in an embedded mode,
+  // i.e. contained within a limited portion of the screen
+  embedded: false,
+  // Number of milliseconds between automatically proceeding to the
+  // next slide, disabled when set to 0, this value can be overwritten
+  // by using a data-autoslide attribute on your slides
+  autoSlide: 0,
+  // Stop auto-sliding after user input
+  autoSlideStoppable: true,
+  // Enable slide navigation via mouse wheel
+  mouseWheel: false,
+  // Hides the address bar on mobile devices
+  hideAddressBar: true,
+  // Opens links in an iframe preview overlay
+  previewLinks: false,
+  // Theme (e.g., beige, black, league, night, serif, simple, sky, solarized, white)
+  // NOTE setting the theme in the config no longer works in reveal.js 3.x
+  //theme: Reveal.getQueryHash().theme || 'valwin',
+  // Transition style (e.g., none, fade, slide, convex, concave, zoom)
+  transition: Reveal.getQueryHash().transition || 'slide',
+  // Transition speed (e.g., default, fast, slow)
+  transitionSpeed: 'default',
+  // Transition style for full page slide backgrounds (e.g., none, fade, slide, convex, concave, zoom)
+  backgroundTransition: 'fade',
+  // Number of slides away from the current that are visible
+  viewDistance: 3,
+  // Parallax background image (e.g., "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'")
+  parallaxBackgroundImage: '',
+  // Parallax background size in CSS syntax (e.g., "2100px 900px")
+  parallaxBackgroundSize: '',
+
+  // The "normal" size of the presentation, aspect ratio will be preserved
+  // when the presentation is scaled to fit different resolutions. Can be
+  // specified using percentage units.
+  width: 960,
+  height: 700,
+
+  // Factor of the display size that should remain empty around the content
+  margin: 0.1,
+
+  // Bounds for smallest/largest possible scale to apply to content
+  minScale: 0.2,
+  maxScale: 1.5,
+
+  // Optional libraries used to extend on reveal.js
+  dependencies: [
+      { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+      { src: 'reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+      { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+      { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+  ]
+});</script></body></html>
